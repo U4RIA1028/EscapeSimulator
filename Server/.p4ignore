@@ -1,0 +1,37 @@
+# Ignore .p4ignore files
+.p4ignore
+
+# Ignore object files, shared libraries, executables
+*.dll
+*.so
+*.exe
+*.o
+
+# Ignore all HTML files except the readme file
+*.html
+!readme.html
+
+# Ignore the build.properties file in this directory
+/build.properties
+
+*/bin/*
+*/obj/*
+*/.vs/*
+*/.vscode/*
+*/packages/*
+*/x64/* 
+
+# Ignore all Intermediate and Saved directories
+*/Intermediate/*
+*/Saved/*
+*/DerivedDataCache/*
+*/Build/*
+*/Intermediate/*
+*/Intermidiate/*
+.git/
+#Ignore resource files
+
+*/obj/*
+*/fbx/*
+*/psd/*
+*/tga/*

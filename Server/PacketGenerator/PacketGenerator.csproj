@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+    <PackageOutputPath>$</PackageOutputPath>
+    <BaseOutputPath></BaseOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Templates\ClientPacketHandler.cs" />
+    <Compile Remove="Templates\PacketHandler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Templates\ClientPacketHandler.cs" />
+    <None Include="Templates\PacketHandler.cs" />
+  </ItemGroup>
+
+</Project>
