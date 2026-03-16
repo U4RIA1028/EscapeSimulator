@@ -6,22 +6,6 @@
 #include "../../Utils/StringUtils.h"
 #include "Capstone.h"
 
-ADoorObject::ADoorObject()
-{
-	PrimaryActorTick.bCanEverTick = true;
-
-	Door = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
-	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
-
-	Box->SetupAttachment(RootComponent);
-	Door->SetupAttachment(Box);
-
-	Door->SetCollisionProfileName(TEXT("BlockAll"));
-	Box->SetCollisionProfileName(TEXT("Trigger"));
-
-	bIsClosed = true;
-}
-
 void ADoorObject::BeginPlay()
 {
 	Super::BeginPlay();
@@ -34,29 +18,11 @@ void ADoorObject::BeginPlay()
 	}
 }
 
-void ADoorObject::Init()
-{
-	ObjectInfo->set_object_type(Protocol::ObjectType::OBJECT_DOOR);
-
-	Super::Init();
-}
-
 void ADoorObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	Timeline.TickTimeline(DeltaTime);
-}
-
-void ADoorObject::PlaySound()
-{
-	USoundManager::GetInstance()->PlaySoundAtLocation(this, TEXT("/Script/Engine.SoundWave'/Game/Sound/WoodenDoor.WoodenDoor'"), GetActorLocation());
-}
-
-void ADoorObject::OpenDoor(float Value)
-{
-	FRotator DoorNewRotation = FRotator(0.0f, Value, 0.f);
-	Door->SetRelativeRotation(DoorNewRotation);
 }
 
 bool ADoorObject::OnClicked(class ACapstoneMyPlayer* Player)
@@ -82,16 +48,4 @@ void ADoorObject::OpenClosedDoor(bool IsClosed)
 	}
 
 	bIsClosed = !bIsClosed;
-}
-
-void ADoorObject::SendPacket(const uint64 PlayerId)
-{
-	FString Name = GetName();
-
-	Protocol::C_ACTION_DOOR doorAction;
-	doorAction.set_player_id(PlayerId);
-	doorAction.set_object_name(StringUtils::GetString(Name));
-	doorAction.set_is_open_door(bIsClosed);
-
-	SEND_PACKET(doorAction);
 }
