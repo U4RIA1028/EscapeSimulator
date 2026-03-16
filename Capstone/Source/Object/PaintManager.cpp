@@ -24,7 +24,7 @@ void APaintManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CorrectSequence = { 1, 2, 3 , 4, 5, 6 }; //6개 정도로 늘릴 예정임
+	CorrectSequence = { 1, 2, 3 , 4, 5, 6 };
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APaintPuzzle::StaticClass(), FoundPuzzles);
 
@@ -36,42 +36,6 @@ void APaintManager::BeginPlay()
 			PaintPuzzle->SetManager(this);
 		}
 	}
-
-	// Find the DeskWithDrawers actor with the specified ID in the world
-	TArray<AActor*> FoundDesks;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADeskWithDrawers::StaticClass(), FoundDesks);
-
-	for (AActor* Actor : FoundDesks)
-	{
-		ADeskWithDrawers* Desk = Cast<ADeskWithDrawers>(Actor);
-		if (Desk && Desk->DeskID == TargetDeskID)
-		{
-			DeskWithDrawers = Desk;
-			break;
-		}
-	}
-}
-
-// Called every frame
-void APaintManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void APaintManager::PlayClickSound()
-{
-	USoundManager::GetInstance()->PlaySoundAtLocation(this, TEXT("/Script/Engine.SoundWave'/Game/Sound/ClickSound.ClickSound'"), GetActorLocation());
-}
-
-void APaintManager::PlaySuccessSound()
-{
-	USoundManager::GetInstance()->PlaySoundAtLocation(this, TEXT("/Script/Engine.SoundWave'/Game/Sound/PuzzleSuccess.PuzzleSuccess'"), GetActorLocation());
-}
-
-void APaintManager::PlayFailSound()
-{
-	USoundManager::GetInstance()->PlaySoundAtLocation(this, TEXT("/Script/Engine.SoundWave'/Game/Sound/FailSound.FailSound'"), GetActorLocation());
 }
 
 void APaintManager::OnImageClicked(int32 ClickedIndex)
@@ -109,16 +73,6 @@ void APaintManager::OnPuzzleSolved()
 			PaintPuzzle->bIsPuzzleSolved = true;
 		}
 	}
-
-	if (DeskWithDrawers)
-	{
-		// Unlock and move the drawer when the puzzle is solved
-		if (DrawerToUnlock >= 0 && DrawerToUnlock < DeskWithDrawers->Drawers.Num())
-		{
-			DeskWithDrawers->Drawers[DrawerToUnlock]->Unlock();
-			DeskWithDrawers->Drawers[DrawerToUnlock]->MoveDrawer(true); // 서랍을 움직이게 함
-		}
-	}
 }
 
 void APaintManager::OnPuzzleFailed()
@@ -127,21 +81,4 @@ void APaintManager::OnPuzzleFailed()
 
 	PlayFailSound();
 	PlayerSequence.Empty();
-}
-
-void APaintManager::SendPacket()
-{
-	UCapstoneGameInstance* gameInstnace = Cast<UCapstoneGameInstance>(GWorld->GetGameInstance());
-	uint64 PlayerId = gameInstnace->MyPlayer->GetPlayerInfo()->object_id();
-
-	std::string Name = StringUtils::GetString(GetName());
-
-	Protocol::C_ACTION_LOCK_FREE SendPkt;
-
-	SendPkt.set_player_id(PlayerId);
-	SendPkt.set_object_name(Name);
-	SendPkt.set_is_success(true);
-	SendPkt.set_type(Protocol::LockType::LOCK_PUZZLE);
-
-	SEND_PACKET(SendPkt);
 }
